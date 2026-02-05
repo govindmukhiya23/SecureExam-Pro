@@ -6,18 +6,19 @@ import toast from 'react-hot-toast';
 
 interface ExamLayoutProps {
   children: ReactNode;
+  title?: string;
 }
 
-export default function ExamLayout({ children }: ExamLayoutProps) {
+export default function ExamLayout({ children, title }: ExamLayoutProps) {
   const navigate = useNavigate();
-  const { session, blockExam } = useExamStore();
+  const { session } = useExamStore();
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockReason, setBlockReason] = useState('');
 
   useEffect(() => {
-    // Check if session exists
+    // Only enter fullscreen if session exists - don't navigate away
+    // as session may be set asynchronously
     if (!session) {
-      navigate('/student/exams');
       return;
     }
 
