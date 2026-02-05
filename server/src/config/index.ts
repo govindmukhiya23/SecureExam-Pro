@@ -18,7 +18,7 @@ export const config = {
 
   // JWT
   jwt: {
-    secret: process.env.JWT_SECRET || 'development-secret-change-in-production',
+    secret: process.env.JWT_SECRET || '',
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   },
 
@@ -61,10 +61,26 @@ export const config = {
 
 // Validate required environment variables
 export function validateConfig(): void {
-  const required = ['SUPABASE_URL', 'SUPABASE_ANON_KEY'];
+  const required = ['SUPABASE_URL', 'SUPABASE_ANON_KEY', 'JWT_SECRET'];
   const missing = required.filter((key) => !process.env[key]);
 
-  if (missing.length > 0 && config.isProduction) {
+  if (missing.length > 0) {
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  }
+
+  // Validate JWT secret strength
+  if (config.jwt.secret && config.jwt.secret.length < 32) {
+    console.warn('⚠️  WARNING: JWT_SECRET is less than 32 characters. This is not recommended for production.');
+    if (config.isProduction) {
+      throw new Error('JWT_SECRET must be at least 32 characters in production');
+    }
+  }
+
+  // Validate CORS origin
+  if (config.cors.origin === '*') {
+    console.warn('⚠️  WARNING: CORS origin is set to "*". This is not recommended for production.');
+    if (config.isProduction) {
+      throw new Error('CORS_ORIGIN cannot be "*" in production');
+    }
   }
 }

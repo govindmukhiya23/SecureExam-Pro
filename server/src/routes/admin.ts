@@ -293,9 +293,10 @@ router.get('/students', authenticate, requireAdmin, async (req: Request, res: Re
       `, { count: 'exact' })
       .eq('role', 'student');
 
-    // Apply filters
+    // Apply filters - sanitize search input to prevent SQL injection
     if (search) {
-      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,roll_number.ilike.%${search}%`);
+      const sanitizedSearch = search.toString().replace(/[%_\\]/g, '\\$&');
+      query = query.or(`name.ilike.%${sanitizedSearch}%,email.ilike.%${sanitizedSearch}%,roll_number.ilike.%${sanitizedSearch}%`);
     }
 
     if (department_id) {
@@ -518,7 +519,7 @@ router.patch('/students/:id/status', authenticate, requireAdmin, async (req: Req
   }
 });
 
-// GET /api/admin/students/stats - Get student statistics
+// GET /api/admin/students-stats - Get student statistics
 router.get('/students-stats', authenticate, requireAdmin, async (req: Request, res: Response) => {
   try {
     // Get total students count

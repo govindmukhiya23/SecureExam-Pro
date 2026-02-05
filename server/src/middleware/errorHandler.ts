@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { config } from '../config/index.js';
 
 export interface AppError extends Error {
   statusCode?: number;
@@ -12,18 +13,25 @@ export const errorHandler = (
   next: NextFunction
 ): void => {
   const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  let message = err.message || 'Internal Server Error';
 
-  console.error(`[ERROR] ${statusCode} - ${message}`, {
+  // Sanitize error messages in production
+  if (config.isProduction && statusCode === 500) {
+    message = 'An internal server error occurred. Please try again later.';
+  }
+
+  console.error(`[ERROR] ${statusCode} - ${err.message}`, {
     path: req.path,
     method: req.method,
     stack: err.stack,
+    timestamp: new Date().toISOString(),
   });
 
   res.status(statusCode).json({
     success: false,
     error: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(config.nodeEnv === 'development' && { stack: err.stack }),
+    timestamp: new Date().toISOString(),
   });
 };
 
