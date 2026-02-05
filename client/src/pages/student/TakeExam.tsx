@@ -74,7 +74,7 @@ export default function TakeExam() {
 
       // Connect to socket
       if (token) {
-        socketService.connect(token);
+        socketService.connect();
         socketService.joinSession(data.session?.id || data.id);
       }
     },

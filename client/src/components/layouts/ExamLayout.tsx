@@ -12,6 +12,16 @@ interface ExamLayoutProps {
 export default function ExamLayout({ children, title }: ExamLayoutProps) {
   const navigate = useNavigate();
   const { session } = useExamStore();
+
+  // Set document title if provided
+  useEffect(() => {
+    if (title) {
+      document.title = `${title} - SecureExam Pro`;
+    }
+    return () => {
+      document.title = 'SecureExam Pro';
+    };
+  }, [title]);
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockReason, setBlockReason] = useState('');
 

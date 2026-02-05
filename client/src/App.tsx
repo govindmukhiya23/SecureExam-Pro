@@ -3,7 +3,6 @@ import { useAuthStore } from './stores/authStore';
 
 // Layouts
 import MainLayout from './components/layouts/MainLayout';
-import ExamLayout from './components/layouts/ExamLayout';
 
 // Auth Pages
 import LoginPage from './pages/auth/LoginPage';

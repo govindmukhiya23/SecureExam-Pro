@@ -95,8 +95,7 @@ export default function ExamIntro() {
     );
   }
 
-  // Camera is ALWAYS required for all exams
-  const requiresCamera = true;
+  // Camera is ALWAYS required for all exams - canStart depends on camera being ready
   const canStart = agreed && cameraReady;
 
   return (
