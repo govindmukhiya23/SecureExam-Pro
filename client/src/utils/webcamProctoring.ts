@@ -340,9 +340,9 @@ class WebcamProctoring {
 
     // Report to server
     try {
-      await proctoringAPI.logEvent({
-        session_id: this.sessionId,
-        event_type: eventType,
+      await proctoringAPI.logEvent(this.sessionId, {
+        eventType: eventType,
+        severity: points >= 25 ? 'high' : 'medium',
       });
 
       // Also emit via socket for real-time monitoring

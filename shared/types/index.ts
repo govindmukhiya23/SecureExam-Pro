@@ -364,7 +364,7 @@ export interface EnhancedUserProfile extends UserProfile {
   year_batch?: number;
   department_id?: string;
   department?: Department;
-  account_status: 'active' | 'disabled' | 'suspended';
+  account_status: 'active' | 'suspended' | 'inactive';
 }
 
 // Student Directory Types
@@ -376,7 +376,7 @@ export interface StudentListItem {
   department_code?: string;
   department_name?: string;
   year_batch?: number;
-  account_status: 'active' | 'disabled' | 'suspended';
+  account_status: 'active' | 'suspended' | 'inactive';
   created_at: string;
   exams_taken: number;
   last_exam_date?: string;

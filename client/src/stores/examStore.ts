@@ -18,15 +18,18 @@ interface ExamStore {
   session: ExamSession | null;
   timeRemaining: number;
   isSubmitting: boolean;
+  isScreenBlank: boolean;
   
   // Actions
   startSession: (data: Omit<ExamSession, 'answers' | 'violations' | 'riskScore' | 'isFullscreen' | 'isBlocked'>) => void;
+  setSession: (session: ExamSession | any) => void;
   setAnswer: (questionId: string, answer: string | number) => void;
   setCurrentQuestion: (index: number) => void;
   updateRiskScore: (score: number) => void;
   addViolation: (violation: string) => void;
   setTimeRemaining: (time: number) => void;
   setFullscreen: (isFullscreen: boolean) => void;
+  setScreenBlank: (isBlank: boolean) => void;
   blockExam: (reason: string) => void;
   clearSession: () => void;
   setSubmitting: (isSubmitting: boolean) => void;
@@ -36,6 +39,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
   session: null,
   timeRemaining: 0,
   isSubmitting: false,
+  isScreenBlank: false,
 
   startSession: (data) => {
     set({
@@ -49,6 +53,10 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       },
       timeRemaining: data.duration * 60,
     });
+  },
+
+  setSession: (session) => {
+    set({ session });
   },
 
   setAnswer: (questionId, answer) => {
@@ -116,6 +124,10 @@ export const useExamStore = create<ExamStore>((set, get) => ({
         isFullscreen,
       },
     });
+  },
+
+  setScreenBlank: (isBlank) => {
+    set({ isScreenBlank: isBlank });
   },
 
   blockExam: (reason) => {

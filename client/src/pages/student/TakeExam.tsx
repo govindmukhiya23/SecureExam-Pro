@@ -9,6 +9,7 @@ import antiCheatService from '../../utils/antiCheat';
 import { generateDeviceFingerprint, getScreenResolution, getTimezone } from '../../utils/fingerprint';
 import webcamProctoring from '../../utils/webcamProctoring';
 import toast from 'react-hot-toast';
+import ExamLayout from '../../components/layouts/ExamLayout';
 import {
   ClockIcon,
   ChevronLeftIcon,
@@ -94,7 +95,7 @@ export default function TakeExam() {
       }));
       return sessionAPI.submit(sessionId!, answerPayload);
     },
-    onSuccess: (response) => {
+    onSuccess: () => {
       toast.success('Exam submitted successfully');
       cleanup();
       navigate(`/student/results/${sessionId}`);
@@ -158,7 +159,7 @@ export default function TakeExam() {
     // Enable anti-cheat
     antiCheatService.initialize(sessionId, {
       onViolation: (eventType, points) => handleSuspiciousEvent(eventType, points >= 25 ? 'high' : 'medium'),
-      onRiskThreshold: (score, action) => {
+      onRiskThreshold: (_score, action) => {
         if (action === 'terminate') {
           toast.error('Session terminated due to suspicious activity');
           cleanup();

@@ -203,11 +203,11 @@ class AntiCheatService {
 
     // Log keyboard event
     if (this.sessionId) {
-      proctoringAPI.logKeyboard({
-        session_id: this.sessionId,
+      proctoringAPI.logKeyboard(this.sessionId, [{
         event_type: 'paste',
         is_trusted: e.isTrusted,
-      });
+        timestamp: Date.now(),
+      }]);
     }
   };
 
@@ -280,9 +280,9 @@ class AntiCheatService {
 
     // Report to server
     try {
-      const response = await proctoringAPI.logEvent({
-        session_id: this.sessionId,
-        event_type: eventType,
+      const response = await proctoringAPI.logEvent(this.sessionId, {
+        eventType: eventType,
+        severity: points >= 25 ? 'high' : 'medium',
       });
 
       const { current_risk_score, action } = response.data.data;
