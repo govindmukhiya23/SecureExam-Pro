@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "npx tsc",
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts",
     "test": "jest"
@@ -25,6 +25,7 @@
     "openai": "^4.73.0",
     "pdfjs-dist": "^4.8.69",
     "socket.io": "^4.7.2",
+    "typescript": "^5.3.2",
     "uuid": "^9.0.1",
     "xlsx": "^0.18.5",
     "zod": "^3.22.4"
@@ -37,8 +38,7 @@
     "@types/multer": "^1.4.12",
     "@types/node": "^20.10.0",
     "@types/uuid": "^9.0.7",
-    "tsx": "^4.6.2",
-    "typescript": "^5.3.2"
+    "tsx": "^4.6.2"
   }
 
 }
