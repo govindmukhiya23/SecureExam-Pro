@@ -9,6 +9,15 @@ import {
   PlayIcon,
 } from '@heroicons/react/24/outline';
 
+interface SessionData {
+  id: string;
+  status: string;
+  score: number | null;
+  exam_id: string;
+  exam_title?: string;
+  start_time: string;
+}
+
 export default function StudentDashboard() {
   const { user } = useAuthStore();
 
@@ -24,17 +33,17 @@ export default function StudentDashboard() {
     queryKey: ['my-sessions'],
     queryFn: async () => {
       const response = await sessionAPI.getMySessions();
-      return response.data.data;
+      return response.data.data as SessionData[];
     },
   });
 
-  const completedCount = mySessions?.filter(s => s.status === 'completed').length || 0;
-  const inProgressCount = mySessions?.filter(s => s.status === 'in_progress').length || 0;
-  const averageScore = mySessions?.length > 0
+  const completedCount = mySessions?.filter((s: SessionData) => s.status === 'completed' || s.status === 'submitted').length || 0;
+  const inProgressCount = mySessions?.filter((s: SessionData) => s.status === 'in_progress').length || 0;
+  const averageScore = mySessions && mySessions.length > 0
     ? mySessions
-        .filter(s => s.score !== null)
-        .reduce((acc, s) => acc + (s.score || 0), 0) / 
-        (mySessions.filter(s => s.score !== null).length || 1)
+        .filter((s: SessionData) => s.score !== null)
+        .reduce((acc: number, s: SessionData) => acc + (s.score || 0), 0) / 
+        (mySessions.filter((s: SessionData) => s.score !== null).length || 1)
     : 0;
 
   const recentSessions = mySessions?.slice(0, 5) || [];

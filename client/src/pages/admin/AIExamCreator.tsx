@@ -8,7 +8,6 @@ import {
   DocumentArrowUpIcon,
   SparklesIcon,
   CheckCircleIcon,
-  XCircleIcon,
   PencilIcon,
   TrashIcon,
   ExclamationTriangleIcon,
@@ -124,7 +123,7 @@ export default function AIExamCreator() {
         questions,
       });
     },
-    onSuccess: (response) => {
+    onSuccess: () => {
       setStep('success');
       toast.success('Exam created successfully!');
     },

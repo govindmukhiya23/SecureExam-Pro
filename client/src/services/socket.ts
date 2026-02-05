@@ -80,6 +80,14 @@ class SocketService {
     this.socket?.emit('admin:monitor', examId);
   }
 
+  joinAdminMonitor(examId: string): void {
+    this.socket?.emit('admin:monitor', examId);
+  }
+
+  leaveAdminMonitor(examId: string): void {
+    this.socket?.emit('admin:stop-monitor', examId);
+  }
+
   stopMonitoring(examId: string): void {
     this.socket?.emit('admin:stop-monitor', examId);
   }
@@ -105,6 +113,10 @@ class SocketService {
   // Convenience methods for common events
   onSessionUpdate(callback: (data: any) => void): void {
     this.on('session:update', callback);
+  }
+
+  onSuspiciousEvent(callback: (data: any) => void): void {
+    this.on('event:suspicious', callback);
   }
 
   onSessionAlert(callback: (data: any) => void): void {

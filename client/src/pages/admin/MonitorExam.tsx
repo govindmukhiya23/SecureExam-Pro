@@ -17,6 +17,17 @@ import type { ExamSession, SuspiciousEvent } from '../../../../shared/types';
 interface LiveSession extends ExamSession {
   user_name?: string;
   user_email?: string;
+  risk_level?: string;
+  risk_score?: number;
+  score?: number;
+  started_at?: string;
+  completed_at?: string;
+}
+
+interface AlertEvent extends SuspiciousEvent {
+  student_name?: string;
+  severity?: string;
+  risk_points?: number;
 }
 
 export default function MonitorExam() {
@@ -25,7 +36,7 @@ export default function MonitorExam() {
   const { token } = useAuthStore();
 
   const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
-  const [recentAlerts, setRecentAlerts] = useState<(SuspiciousEvent & { student_name?: string })[]>([]);
+  const [recentAlerts, setRecentAlerts] = useState<AlertEvent[]>([]);
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
 
   const { data: exam, isLoading } = useQuery({
@@ -55,7 +66,7 @@ export default function MonitorExam() {
 
   useEffect(() => {
     if (token && id) {
-      socketService.connect(token);
+      socketService.connect();
       socketService.joinAdminMonitor(id);
 
       socketService.onSuspiciousEvent((data) => {
@@ -181,9 +192,11 @@ export default function MonitorExam() {
                   </thead>
                   <tbody>
                     {liveSessions.map((session) => {
-                      const startTime = new Date(session.started_at!).getTime();
+                      const startTime = new Date(session.started_at || session.start_time).getTime();
                       const elapsed = Math.floor((Date.now() - startTime) / 60000);
                       const remaining = Math.max(0, exam.duration_minutes - elapsed);
+                      const riskLevel = session.risk_level || 'low';
+                      const riskScore = session.risk_score ?? session.current_risk_score;
 
                       return (
                         <tr
@@ -213,8 +226,8 @@ export default function MonitorExam() {
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <span className={`badge ${getRiskBadgeClass(session.risk_level)}`}>
-                              {session.risk_level} ({session.risk_score})
+                            <span className={`badge ${getRiskBadgeClass(riskLevel)}`}>
+                              {riskLevel} ({riskScore})
                             </span>
                           </td>
                           <td className="py-3 px-4 text-sm text-gray-600">
@@ -295,7 +308,7 @@ export default function MonitorExam() {
                       alert.severity === 'medium' ? 'bg-yellow-200 text-yellow-800' :
                       'bg-gray-200 text-gray-800'
                     }`}>
-                      +{alert.risk_points}
+                      +{alert.risk_points ?? alert.points}
                     </span>
                   </div>
                 </div>
@@ -333,22 +346,22 @@ export default function MonitorExam() {
                     </td>
                     <td className="py-3 px-4">
                       <span className={`badge ${
-                        session.status === 'completed' ? 'badge-success' : 'badge-danger'
+                        session.status === 'submitted' ? 'badge-success' : 'badge-danger'
                       }`}>
                         {session.status}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-gray-900">
-                      {session.score !== null ? `${session.score}/${exam.total_points}` : '-'}
+                      {session.score !== null && session.score !== undefined ? `${session.score}/${exam.total_points}` : '-'}
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`badge ${getRiskBadgeClass(session.risk_level)}`}>
-                        {session.risk_level}
+                      <span className={`badge ${getRiskBadgeClass(session.risk_level || 'low')}`}>
+                        {session.risk_level || 'low'}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-sm text-gray-500">
-                      {session.completed_at
-                        ? new Date(session.completed_at).toLocaleString()
+                      {session.completed_at || session.submit_time
+                        ? new Date(session.completed_at || session.submit_time!).toLocaleString()
                         : '-'}
                     </td>
                   </tr>
